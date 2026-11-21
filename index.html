@@ -1536,6 +1536,20 @@ function renderCabinet(){
     });
     return;
   }
+  if(!gateHash){
+    box.innerHTML = '<div class="gate"><div class="g-ico">' + I.lock + '</div><h3 style="font-size:20px">Новый PIN</h3>'
+      + '<p class="muted" style="font-weight:600;font-size:14px;line-height:1.55;margin:8px auto 18px;max-width:300px">Придумайте PIN из 4 цифр для кабинета владельца.</p>'
+      + '<div class="field" style="text-align:left"><input class="inp" type="tel" id="gateNewPin" placeholder="••••" inputmode="numeric" maxlength="4" autocomplete="new-password" style="text-align:center;font-size:22px;letter-spacing:8px"><div class="err">PIN — ровно 4 цифры.</div></div>'
+      + '<button class="btn" type="button" id="gateCreateBtn">Сохранить PIN</button></div>';
+    function tryCreate(){
+      var v = $('#gateNewPin').value.trim();
+      if(!/^\d{4}$/.test(v)){ var f = $('.field', box); f.classList.add('invalid'); var inp = $('#gateNewPin'); inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake'); return; }
+      settings.access.pin = hashPw(v); settings.access.pass = ''; saveSettings(); unlocked = true; renderCabinet();
+    }
+    $('#gateCreateBtn').addEventListener('click', tryCreate);
+    $('#gateNewPin').addEventListener('keydown', function(e){ if(e.key === 'Enter') tryCreate(); });
+    return;
+  }
   var tabs = [ ['orders','Заявки'], ['calendar','Календарь'], ['photos','Фото'], ['services','Услуги'], ['tariffs','Тарифы'], ['company','Компания'], ['ai','Ключ ИИ'], ['game','Игра'], ['chars','Персонажи'], ['access','Доступ'], ['data','Данные'] ];
   var h = '<div class="cab-tabs">' + tabs.map(function(t){ return '<button type="button" data-cab="' + t[0] + '" class="' + (cabTab===t[0]?'on':'') + '">' + t[1] + '</button>'; }).join('') + '</div><div id="cabBody"></div>';
   box.innerHTML = h;
